@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	   xmlns:solr="http://www.springframework.org/schema/data/solr"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+       http://www.springframework.org/schema/cache   
+       http://www.springframework.org/schema/cache/spring-cache-4.1.xsd
+       http://www.springframework.org/schema/data/solr http://www.springframework.org/schema/data/solr/spring-solr-2.0.xsd
+       ">
+	<!-- 数据库连接 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">  
+        <property name="driverClass" value="${datasource.driverClassName}"></property>    
+        <property name="jdbcUrl" value="${datasource.url}"></property>    
+        <property name="user" value="${datasource.username}"></property>    
+        <property name="password" value="${datasource.password}"></property>    
+        <property name="acquireIncrement" value="${c3p0.acquireIncrement}"></property>    
+        <property name="initialPoolSize" value="${c3p0.initialPoolSize}"></property>    
+        <property name="maxIdleTime" value="${c3p0.maxIdleTime}"></property>    
+        <property name="maxPoolSize" value="${c3p0.maxPoolSize}"></property>    
+        <property name="minPoolSize" value="${c3p0.minPoolSize}"></property>    
+        <property name="idleConnectionTestPeriod" value="${c3p0.idleConnectionTestPeriod}"></property>    
+        <property name="maxStatements" value="${c3p0.maxStatements}"></property>    
+        <property name="numHelperThreads" value="${c3p0.numHelperThreads}"></property>    
+        <property name="testConnectionOnCheckout" value="${c3p0.testConnectionOnCheckout}"></property>    
+        <property name="preferredTestQuery" value="${c3p0.preferredTestQuery}"></property>    
+        <property name="acquireRetryDelay" value="1000"></property>    
+        <property name="acquireRetryAttempts" value="60"></property>    
+        <property name="breakAfterAcquireFailure" value="false"></property>   
+    </bean>
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:c3p0.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+	<property name="dataSource" ref="dataSource" />
+</bean>
+
+	<solr:repositories base-package="com.silence.sifireService.*"/>
+
+	<solr:solr-client id="solrServer" url="http://192.168.200.58:8983/solr/SiFire.speech,http://192.168.200.55:8983/solr/SiFire.speech,http://192.168.200.52:8983/solr/SiFire.speech,http://192.168.200.53:8983/solr/SiFire.speech,http://192.168.200.57:8983/solr/SiFire.speech" timeout="3000000" maxConnections="500"/>
+  	<bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate" scope="prototype">
+      <constructor-arg ref="solrServer" />
+  	</bean>
+
+
+	<!-- mvc -->
+	<tx:annotation-driven />
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+	
+	<context:annotation-config />
+	<!-- bean扫描 -->
+	<context:component-scan base-package="com.silence.sifireService.*" />
+	
+	<bean
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="java.lang.Exception">error</prop>
+			</props>
+		</property>
+	</bean>
+	
+</beans>

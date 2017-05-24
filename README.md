@@ -17,7 +17,7 @@
 
 备注：
 
-   1. 语义联想需要的模型[点此下载](http://pan.baidu.com/s/1eScfac6)，下载后放到项目\src\main\resources目录下。
+   1. 语义联想需要的模型[点此下载](http://pan.baidu.com/s/1jIFoUVG)，下载后放到项目\src\main\resources目录下。
      
    2. jcseg-core jar包大，可以更新maven下载也可以[点此下载](http://pan.baidu.com/s/1i5Fo6dZ),下载后放到项目\sources\lib\sf目录下。
 
